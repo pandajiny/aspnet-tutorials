@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\tutorial\\aspnet\\TodoApi20201014\\TodoApi20201014.csproj": {}
+    "D:\\tutorial\\aspnet\\TodoApi20201014\\backend\\TodoApi20201014.csproj": {}
   },
   "projects": {
-    "D:\\tutorial\\aspnet\\TodoApi20201014\\TodoApi20201014.csproj": {
+    "D:\\tutorial\\aspnet\\TodoApi20201014\\backend\\TodoApi20201014.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\tutorial\\aspnet\\TodoApi20201014\\TodoApi20201014.csproj",
+        "projectUniqueName": "D:\\tutorial\\aspnet\\TodoApi20201014\\backend\\TodoApi20201014.csproj",
         "projectName": "TodoApi20201014",
-        "projectPath": "D:\\tutorial\\aspnet\\TodoApi20201014\\TodoApi20201014.csproj",
+        "projectPath": "D:\\tutorial\\aspnet\\TodoApi20201014\\backend\\TodoApi20201014.csproj",
         "packagesPath": "C:\\Users\\astic\\.nuget\\packages\\",
-        "outputPath": "D:\\tutorial\\aspnet\\TodoApi20201014\\obj\\",
+        "outputPath": "D:\\tutorial\\aspnet\\TodoApi20201014\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\astic\\AppData\\Roaming\\NuGet\\NuGet.Config",

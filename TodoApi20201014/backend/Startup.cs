@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 
 using TodoApi20201014.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite;
 
 namespace TodoApi20201014
 {
@@ -25,6 +24,18 @@ namespace TodoApi20201014
             services.AddControllers()
             .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
 
+            services.AddCors(
+                options =>
+                {
+                    options.AddPolicy(name: "PolicyCors", builder =>
+                    {
+                        builder.WithOrigins("*");
+                        builder.WithMethods("*");
+                        builder.WithHeaders("*");
+                    });
+                }
+            );
+
             services.AddDbContext<TodoContext>(options
              => options.UseSqlite(Configuration.GetConnectionString("TodoContext")));
         }
@@ -37,9 +48,12 @@ namespace TodoApi20201014
                 app.UseDeveloperExceptionPage();
             }
 
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
