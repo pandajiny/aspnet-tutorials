@@ -31,11 +31,6 @@ namespace TodoApi20201014.Controllers
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, todoItem);
         }
-        // [HttpPost]
-        // public TodoItem TestPostItem([FromBody] TodoItem todoItem)
-        // {
-        //     return todoItem;
-        // }
 
         // GET: api/TodoItems/Greeting
         [Route("[action]")]
