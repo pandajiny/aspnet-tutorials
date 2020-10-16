@@ -3,6 +3,7 @@ interface TodoItem {
   Id?: number;
   Content: string;
   IsComplete: boolean;
+  ParentId?: number;
 }
 
 let todoItems: TodoItem[] = [];
@@ -23,12 +24,12 @@ const getTodoItems = async (): Promise<TodoItem[]> => {
   return data;
 };
 
-const addTodoItem = async () => {
+const addTodoItem = async (content: string, parentId?: number) => {
   console.log("adding todo");
-  const content = $content.value;
   const todoItem: TodoItem = {
     Content: content,
     IsComplete: false,
+    ParentId: parentId || null,
   };
   $content.value = "";
 
@@ -77,12 +78,18 @@ const toggleIsComplete = async (id: number) => {
 const $content = document.getElementById("content") as HTMLInputElement;
 $content.addEventListener("keyup", (ev: KeyboardEvent) => {
   if (ev.key == "Enter") {
-    addTodoItem();
+    addTodoItem($content.value).then(() => {
+      $content.value = "";
+    });
   }
 });
 
 const $submit = document.getElementById("submit") as HTMLButtonElement;
-$submit.addEventListener("click", addTodoItem);
+$submit.addEventListener("click", () => {
+  addTodoItem($content.value).then(() => {
+    $content.value = "";
+  });
+});
 
 const $todolist = document.getElementById("todolist") as HTMLDivElement;
 
@@ -90,30 +97,123 @@ const updateTodolist = async () => {
   $todolist.innerHTML = "";
 
   const todoItems = await getTodoItems();
-  todoItems.map((todoItem) => {
-    const $todo = document.createElement("div");
-    $todo.id = "todo";
-    if (todoItem.IsComplete) {
-      $todo.className += " done";
+  todoItems
+    .filter((todoItem) => todoItem.ParentId == null)
+    .map((todoItem) => {
+      const $todo = $createTodoItem(todoItem);
+      $todolist.appendChild($todo);
+    });
+};
+
+const $createTodoItem = (todoItem: TodoItem): HTMLDivElement => {
+  const $todo = document.createElement("div");
+  $todo.id = `todo-${todoItem.Id}`;
+  $todo.className = "todo";
+  if (todoItem.IsComplete) {
+    $todo.className += " done";
+  }
+
+  // main
+  const $main = document.createElement("div");
+  $main.id = "main";
+
+  $main.addEventListener("mouseover", () => {
+    const $addForm = document
+      .getElementById(`todo-${todoItem.Id}`)
+      .querySelector("#add-child-form");
+
+    if ($addForm.className == "unactive") {
+      $addForm.className = "active";
     }
-
-    const $content = document.createElement("p");
-    $content.appendChild(document.createTextNode(todoItem.Content));
-
-    const $deleteButton = document.createElement("button");
-    $deleteButton.appendChild(document.createTextNode("❌"));
-    $deleteButton.addEventListener("click", () => {
-      deleteTodoItem(todoItem.Id);
-    });
-
-    $todo.appendChild($content);
-    $todo.appendChild($deleteButton);
-    $todo.addEventListener("click", () => {
-      toggleIsComplete(todoItem.Id);
-    });
-
-    $todolist.appendChild($todo);
   });
+
+  $main.addEventListener("mouseleave", () => {
+    const $addForm = document
+      .getElementById(`todo-${todoItem.Id}`)
+      .querySelector("#add-child-form");
+    if ($addForm.className == "active") {
+      $addForm.className = "unactive";
+    }
+  });
+
+  // main-container
+  const $container = document.createElement("div");
+  $container.id = "container";
+
+  // main-container-content
+  const $content = document.createElement("p");
+  $content.appendChild(document.createTextNode("• " + todoItem.Content));
+
+  $content.addEventListener("click", () => {
+    toggleIsComplete(todoItem.Id);
+  });
+
+  // main-container-deleteButton
+  const $deleteButton = document.createElement("button");
+  $deleteButton.appendChild(document.createTextNode("❌"));
+  $deleteButton.addEventListener("click", () => {
+    deleteTodoItem(todoItem.Id);
+  });
+
+  $container.appendChild($content);
+  $container.appendChild($deleteButton);
+
+  $main.appendChild($container);
+
+  // main-addChildForm
+  const $addChildForm = document.createElement("div");
+  $addChildForm.id = "add-child-form";
+  $addChildForm.className = "unactive";
+
+  const $addChildInput = document.createElement("input");
+  $addChildInput.placeholder = "...adding relative todo";
+  $addChildInput.addEventListener("focus", () => {
+    $addChildForm.className = "focused";
+  });
+  $addChildInput.addEventListener("blur", () => {
+    if ($addChildInput.value == "") {
+      $addChildForm.className = "unactive";
+    }
+  });
+  $addChildInput.addEventListener("keypress", (ev: KeyboardEvent) => {
+    if (ev.key == "Enter") {
+      addTodoItem($addChildInput.value, todoItem.Id).then(() => {
+        $addChildInput.value = "";
+      });
+    }
+  });
+
+  const $addChildSubmit = document.createElement("button");
+  $addChildSubmit.appendChild(document.createTextNode("✅"));
+  $addChildSubmit.onclick = () => {
+    addTodoItem($addChildInput.value, todoItem.Id).then(() => {
+      $addChildInput.value = "";
+    });
+  };
+
+  $addChildForm.appendChild($addChildInput);
+  $addChildForm.appendChild($addChildSubmit);
+
+  $main.appendChild($addChildForm);
+
+  $todo.appendChild($main);
+
+  // child list
+  const $childs = document.createElement("div");
+  $childs.id = "childs";
+
+  const childList = todoItems.filter((t) => t.ParentId == todoItem.Id);
+  childList
+    .map((childItem) => {
+      return $createTodoItem(childItem);
+    })
+    .map(($childItem) => {
+      $childs.appendChild($childItem);
+    });
+
+  $todo.appendChild($childs);
+
+  return $todo;
 };
 
 updateTodolist();

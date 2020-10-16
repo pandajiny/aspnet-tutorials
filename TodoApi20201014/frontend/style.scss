@@ -18,22 +18,53 @@ button {
   font-style: italic;
 }
 
-#todo {
-  padding: 8px;
-  margin: 4px;
-  border: 1px solid gray;
+.todo {
   width: 500px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 
-  transition: 0.5s;
+  #container {
+    padding: 4px;
+    margin: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    transition: 0.5s;
+  }
+
+  #add-child-form {
+    display: none;
+    border-radius: 4px;
+    width: fit-content;
+    margin-left: 32px;
+    padding: 4px;
+
+    input {
+      width: 350px;
+      outline: none;
+      border: none;
+    }
+    ::placeholder {
+      font-style: italic;
+    }
+  }
+  #add-child-form.active,
+  #add-child-form.focused {
+    display: block;
+  }
+
+  #add-child-form:focus-within {
+    border: 1px gray solid;
+  }
+
+  #childs {
+    margin-left: 24px;
+  }
+
+  #container:hover {
+    background-color: #8d8d8d;
+  }
 }
+
 .done {
   text-decoration: line-through;
   color: gray;
-}
-
-#todo:hover {
-  background-color: #8d8d8d;
 }
